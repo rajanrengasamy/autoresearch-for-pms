@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoResearch for Program Managers: How Karpathy's AI Loop Changes Everything</title>
+    
+    <!-- Meta tags for sharing -->
+    <meta name="description" content="Most people see autoresearch as an ML technique. It's not. It's a management operating system. Here's how the PM's daily loop becomes autonomous.">
+    <meta name="author" content="Rajan Rengasamy">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="AutoResearch for Program Managers: How Karpathy's AI Loop Changes Everything">
+    <meta property="og:description" content="Most people see autoresearch as an ML technique. It's not. It's a management operating system.">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="og-image.png">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AutoResearch for Program Managers: How Karpathy's AI Loop Changes Everything">
+    <meta name="twitter:description" content="Most people see autoresearch as an ML technique. It's not. It's a management operating system.">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1a2332;
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --text-tertiary: #6b7280;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --border-color: #1f2937;
+            --code-bg: #0d1117;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        .reading-time {
+            color: var(--text-tertiary);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+            line-height: 1.4;
+        }
+
+        .toc {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 32px;
+            margin: 48px 0;
+        }
+
+        .toc h2 {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+        }
+
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+
+        .toc li {
+            counter-increment: toc-counter;
+            margin-bottom: 12px;
+        }
+
+        .toc li::before {
+            content: counter(toc-counter) ". ";
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .toc a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .toc a:hover {
+            color: var(--accent-cyan);
+        }
+
+        h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 64px;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 24px;
+            color: var(--text-secondary);
+        }
+
+        .pullquote {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--accent-cyan);
+            padding: 24px 32px;
+            margin: 48px 0;
+            font-size: 22px;
+            font-weight: 500;
+            line-height: 1.5;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+
+        code {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            background: var(--code-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 16px;
+            color: var(--accent-cyan);
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 32px 0;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .code-title {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+
+        ul, ol {
+            margin-bottom: 24px;
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .author-bio {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 32px;
+            margin-top: 64px;
+        }
+
+        .author-bio h3 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .author-bio p {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .author-bio p:last-child {
+            margin-bottom: 0;
+        }
+
+        a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .metric {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            h3 {
+                font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 20px;
+            }
+
+            body {
+                font-size: 16px;
+            }
+
+            .container {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="reading-time">14 min read</div>
+        
+        <h1>AutoResearch for Program Managers: How Karpathy's AI Loop Changes Everything About How We Manage Projects</h1>
+        
+        <p class="subtitle">Most people see autoresearch as an ML technique. It's not. It's a management operating system. Here's how the PM's daily loop becomes autonomous.</p>
+
+        <nav class="toc">
+            <h2>Contents</h2>
+            <ol>
+                <li><a href="#introduction">Introduction: The Pattern Hidden in Plain Sight</a></li>
+                <li><a href="#pm-loop">The PM's Daily Loop IS AutoResearch</a></li>
+                <li><a href="#use-cases">Six Concrete Use Cases</a></li>
+                <li><a href="#programming">Programming the Program: The Meta-Insight</a></li>
+                <li><a href="#positioned">Why PMs Are Uniquely Positioned</a></li>
+                <li><a href="#three-files">The Three-File Pattern for PM Work</a></li>
+                <li><a href="#limitations">Honest Limitations & Risks</a></li>
+                <li><a href="#vision">The Vision: PM as Loop Architect</a></li>
+            </ol>
+        </nav>
+
+        <h2 id="introduction">Introduction: The Pattern Hidden in Plain Sight</h2>
+
+        <p>Last week, I was in a quarterly planning meeting with stakeholders across three time zones—Amsterdam just starting their day, Sydney winding down, California barely awake. We were reviewing our data governance program's velocity trends, debating whether our current sprint structure was optimal.</p>
+
+        <p>"What if we tried two-week sprints instead of three?" someone suggested.</p>
+
+        <p>"We could A/B test it," I replied, half-joking.</p>
+
+        <p>But here's the thing: <strong>we should absolutely A/B test it.</strong> And we should automate that testing. And we should let an AI agent iterate on the optimal sprint structure while we focus on strategy.</p>
+
+        <p>That realization hit me after reading Andrej Karpathy's work on autoresearch. For those unfamiliar, Karpathy—co-founder of OpenAI, former Tesla AI lead—developed a pattern for autonomous machine learning research. The setup is elegant: you write a <code>program.md</code> file that defines your goal, your metric, and what the agent is allowed to change. Then the agent runs in a loop forever: propose change → test → measure → keep or revert.</p>
+
+        <p>It's evolutionary. Only improvements survive. The human sets the strategy; the agent handles execution.</p>
+
+        <p>Everyone talks about autoresearch in the context of ML training loops. But here's what I realized: <strong>a program manager's entire job is already an autoresearch loop.</strong> We just run it manually, slowly, and with way too many meetings.</p>
+
+        <div class="pullquote">
+            "A program manager's entire job is already an autoresearch loop. We just run it manually, slowly, and with way too many meetings."
+        </div>
+
+        <h2 id="pm-loop">The PM's Daily Loop IS AutoResearch (They Just Don't Know It)</h2>
+
+        <p>Think about what you do every sprint:</p>
+
+        <ul>
+            <li><strong>Define the goal</strong> (sprint objectives, OKRs)</li>
+            <li><strong>Choose an approach</strong> (team allocation, process, tooling)</li>
+            <li><strong>Execute</strong> (daily standups, progress tracking)</li>
+            <li><strong>Measure outcome</strong> (velocity, defect rate, stakeholder satisfaction)</li>
+            <li><strong>Adjust</strong> (retrospective, process changes)</li>
+        </ul>
+
+        <p>This is literally the autoresearch pattern. Standup → sprint → retro → adjust. We've been doing autoresearch since before it had a name.</p>
+
+        <p>The difference? We're the ones running the loop. Manually. In my case, I'm coordinating changes across time zones, navigating stakeholder politics, and trying to remember what we decided in last quarter's retrospective. It's slow. It's error-prone. And honestly, most of it is measurable and automatable.</p>
+
+        <p>Here's the insight that changes everything: <strong>we can automate the parts of program management that are metric-driven iteration.</strong></p>
+
+        <p>Not the strategy. Not the stakeholder relationships. Not the judgment calls that require human wisdom. But the execution loops? The testing of incremental process improvements? The iteration on templates, formats, and approaches? That's pure autoresearch territory.</p>
+
+        <h2 id="use-cases">Six Concrete Use Cases</h2>
+
+        <p>Let me get concrete. Here are six areas where I could deploy autoresearch loops <em>tomorrow</em> if I had the tooling built. These aren't theoretical—these are real pain points from managing cross-timezone data programs at a global trading firm.</p>
+
+        <h3>1. Stakeholder Communication Optimization</h3>
+
+        <p>Every Friday, I send status updates to three stakeholder tiers: exec leadership, project sponsors, and working-level teams. The emails are different for each group. But here's what I don't know: which format gets the best engagement?</p>
+
+        <p>Should the exec summary be three bullets or five? Should I lead with risks or wins? Should I use RAG status or narrative format? I've been guessing based on experience. But this is <em>measurable</em>.</p>
+
+        <div class="code-title">stakeholder-comms.md</div>
+        <pre><code># Goal
+Maximize stakeholder engagement with weekly status updates
+
+# Metric
+engagement_score = (open_rate * 0.3) + (response_rate * 0.5) + (1 / avg_response_time_hours * 0.2)
+
+# What the agent can change
+- Email subject line templates
+- Executive summary length (3-7 bullets)
+- Ordering of sections (risks-first vs wins-first)
+- Level of detail in each section
+- Use of data visualizations vs text
+- Timing (Friday 4pm vs Monday 9am)
+
+# Constraints
+- Must include all required sections (summary, progress, risks, next steps)
+- Must maintain professional tone
+- Must not exceed 800 words for exec tier
+- Each variation tested with minimum 4-week sample
+
+# Evaluation
+- Track opens, responses, time-to-response per stakeholder tier
+- Segment by tier (exec, sponsor, working-level)
+- Keep changes that improve engagement_score by >5%
+- Revert if engagement drops by >3%</code></pre>
+
+        <p>The agent runs this loop every week. It proposes a variation, sends it to a test segment, measures engagement, and keeps what works. Over a quarter, it learns exactly what communication style resonates with each stakeholder tier.</p>
+
+        <p>I'm not guessing anymore. I'm <em>measuring</em>.</p>
+
+        <h3>2. Meeting Effectiveness</h3>
+
+        <p>I run a weekly cross-timezone sync: 6 AM in California, 3 PM in Amsterdam, 11 PM in Sydney. Nobody's happy. The meeting often runs over. Action items sometimes slip through the cracks.</p>
+
+        <p>Could an autoresearch loop make this better? Absolutely.</p>
+
+        <div class="code-title">meeting-optimization.md</div>
+        <pre><code># Goal
+Minimize meeting duration while maximizing action item completion
+
+# Metric
+effectiveness_score = (1 / avg_meeting_duration_minutes) * action_completion_rate
+
+# What the agent can change
+- Agenda template structure
+- Pre-read format and length
+- Time-boxing per section
+- Follow-up format (Slack vs email vs Jira)
+- Decision documentation approach
+
+# Constraints
+- Meeting duration must be 30-60 minutes
+- All critical topics must be covered
+- Action completion rate must stay above 85%
+
+# Evaluation
+- Measure actual duration vs scheduled duration
+- Track action item completion rate (7-day window)
+- Survey participants on meeting effectiveness (monthly)
+- Keep changes that improve effectiveness_score by >8%</code></pre>
+
+        <p>The agent iterates on meeting structure. Does a structured pre-read reduce meeting time? Do time-boxed sections improve focus? Does immediate Slack follow-up boost action completion?</p>
+
+        <p>After a quarter, you have data. Not opinions. <em>Data.</em></p>
+
+        <h3>3. Risk Register Optimization</h3>
+
+        <p>Here's an uncomfortable truth: most risk registers are theater. We log risks because governance requires it, but how often do our "high-severity" risks actually materialize? And how often do we miss risks we should have flagged?</p>
+
+        <p>This is a prediction accuracy problem. And prediction accuracy is <em>measurable</em>.</p>
+
+        <div class="code-title">risk-prediction.md</div>
+        <pre><code># Goal
+Improve risk prediction accuracy (% of flagged risks that actually materialize)
+
+# Metric
+precision = true_positives / (true_positives + false_positives)
+recall = true_positives / (true_positives + false_negatives)
+f1_score = 2 * (precision * recall) / (precision + recall)
+
+# What the agent can change
+- Risk scoring weights (probability vs impact)
+- Categorization criteria
+- Escalation thresholds
+- Review frequency
+- Risk owner assignment heuristics
+
+# Constraints
+- Cannot remove human review of high-severity risks
+- Must maintain audit trail
+- Changes evaluated over rolling 90-day window
+
+# Evaluation
+- Track which risks materialize vs which don't
+- Measure false positive rate (flagged but didn't happen)
+- Measure false negative rate (happened but wasn't flagged)
+- Optimize for F1 score (balance precision and recall)</code></pre>
+
+        <p>Over time, the agent learns which risk patterns actually lead to issues. Maybe technical risks in the first sprint of a quarter have higher materialization rates. Maybe risks flagged by certain team members are more predictive. The agent figures this out through iteration.</p>
+
+        <p>Your risk register becomes a <em>predictive tool</em>, not a compliance checkbox.</p>
+
+        <h3>4. Sprint Velocity Optimization</h3>
+
+        <p>Every sprint planning, we debate story sizing. "Is this a 5 or an 8?" We argue about whether to split stories. We wonder if our current team allocation is optimal.</p>
+
+        <p>All of this is—you guessed it—<em>measurable</em>.</p>
+
+        <div class="code-title">velocity-optimization.md</div>
+        <pre><code># Goal
+Maximize story points delivered per sprint while keeping defect rate low
+
+# Metric
+velocity_score = story_points_completed * (1 - defect_rate) * (1 - spillover_rate)
+
+# What the agent can change
+- Story sizing heuristics
+- Team allocation patterns (specialist vs generalist)
+- WIP limits
+- Story split recommendations
+- Sprint length (1-week, 2-week, 3-week experiments)
+
+# Constraints
+- Defect rate must stay below 3%
+- Team member utilization must stay between 70-90%
+- No more than 20% spillover per sprint
+
+# Evaluation
+- Track actual velocity vs planned velocity
+- Measure defect rate (bugs found in production within 30 days)
+- Track spillover rate (stories pushed to next sprint)
+- Run A/B tests on sprint structure across parallel teams</code></pre>
+
+        <p>The agent experiments with sprint structure. Two-week sprints vs three-week. Stricter WIP limits vs looser. It measures outcomes and optimizes for <em>sustainable</em> velocity (high points, low defects, minimal spillover).</p>
+
+        <h3>5. Status Report Quality</h3>
+
+        <p>In my experience managing cross-timezone data programs, I've learned that exec engagement with status reports is a leading indicator of program health. If leadership stops asking follow-up questions, you're in trouble—either they don't understand what you're saying, or they don't care.</p>
+
+        <p>Both are fixable through iteration.</p>
+
+        <div class="code-title">status-report-optimization.md</div>
+        <pre><code># Goal
+Maximize executive engagement with weekly status reports
+
+# Metric
+engagement_score = (exec_response_rate * 0.4) + (follow_up_question_count * 0.4) + (forward_rate * 0.2)
+
+# What the agent can change
+- Report format (narrative vs structured vs dashboard)
+- RAG status criteria and thresholds
+- Executive summary style (bullets vs paragraph)
+- Data visualization choices (charts vs tables vs text)
+- Section ordering and emphasis
+
+# Constraints
+- Must fit on 2 pages maximum
+- Must include all governance-required sections
+- Must be readable in under 5 minutes
+
+# Evaluation
+- Track exec response rate to status emails
+- Count follow-up questions (more questions = more engagement)
+- Measure forward rate (execs sharing with their teams)
+- Survey quarterly on report usefulness</code></pre>
+
+        <p>More follow-up questions means they're engaged and thinking strategically. The agent learns what format drives that engagement.</p>
+
+        <h3>6. Vendor/Procurement Optimization</h3>
+
+        <p>Every PM deals with procurement. RFPs, vendor evaluation, contract negotiation. It's slow. It's painful. And most organizations do it the same way every time, regardless of whether it's working.</p>
+
+        <p>But cycle time and quality are both measurable.</p>
+
+        <div class="code-title">procurement-optimization.md</div>
+        <pre><code># Goal
+Reduce procurement cycle time while maintaining vendor quality scores
+
+# Metric
+efficiency_score = (1 / cycle_time_days) * vendor_quality_score * (1 - cost_overrun_rate)
+
+# What the agent can change
+- RFP template structure and length
+- Evaluation criteria weights
+- Negotiation approach (collaborative vs competitive)
+- Vendor shortlist size (3 vs 5 vs 7 vendors)
+- Decision documentation format
+
+# Constraints
+- Must include all compliance-required sections
+- Must have minimum 2 vendors in final evaluation
+- Vendor quality score must stay above 7/10
+
+# Evaluation
+- Measure time from RFP to signed contract
+- Track vendor quality scores (performance reviews at 90 days)
+- Monitor cost overruns vs initial estimates
+- Segment by procurement size and complexity</code></pre>
+
+        <p>Maybe shorter RFPs get faster responses without sacrificing quality. Maybe collaborative negotiation works better for strategic vendors. The agent figures it out through experimentation.</p>
+
+        <div class="pullquote">
+            "The PM becomes an architect of optimization loops, not a manual optimizer."
+        </div>
+
+        <h2 id="programming">Programming the Program: The Meta-Insight</h2>
+
+        <p>Karpathy talks about "programming the program.md"—the human sets the strategy, the agent handles execution. This is the fundamental shift for program managers.</p>
+
+        <p>Traditionally, our job is: <strong>"I decide the best approach based on experience, then execute it."</strong></p>
+
+        <p>With autoresearch, it becomes: <strong>"I define what to optimize and how to measure it. The agent finds the optimal approach through evidence."</strong></p>
+
+        <p>This is profound. You're no longer the one deciding whether exec summaries should be three bullets or five. You're the one deciding that <em>executive engagement</em> is the metric that matters. The agent figures out the optimal format through experimentation.</p>
+
+        <p>Your job shifts from execution to architecture. From "how do I do this?" to "what should I optimize?"</p>
+
+        <p>In my case, managing data programs across three continents, this would be transformative. I spend 60% of my time on execution (writing status reports, running meetings, updating trackers) and 40% on strategy (stakeholder management, roadmap decisions, risk assessment). With autoresearch loops handling the execution iteration, I could invert that ratio.</p>
+
+        <p>Imagine spending 60% of your time on strategy, relationships, and judgment calls—the parts that actually require human wisdom—while the agent optimizes the measurable processes in the background.</p>
+
+        <p>That's the vision.</p>
+
+        <h2 id="positioned">Why PMs Are Uniquely Positioned</h2>
+
+        <p>Here's what surprised me: <strong>program managers are uniquely well-positioned to adopt autoresearch.</strong> Better than most software engineers. Better than most researchers. Here's why:</p>
+
+        <p><strong>1. We already think in metrics.</strong> KPIs, OKRs, velocity, burn rate, cycle time—this is our native language. We don't need to learn how to measure outcomes. We already do it.</p>
+
+        <p><strong>2. We already run retrospectives.</strong> Every sprint, every quarter, we do the "evaluation" step. We ask "what worked, what didn't, what should we change?" We just don't automate the iteration based on those learnings.</p>
+
+        <p><strong>3. We already iterate.</strong> Sprint cycles, quarterly planning adjustments, continuous improvement—iteration is baked into how we work. We're not trying to do something fundamentally new. We're automating something we already do manually.</p>
+
+        <p><strong>4. We have access to the data.</strong> Email open rates, meeting durations, action item completion, velocity trends, stakeholder feedback—we already collect most of this. We just don't use it systematically for optimization.</p>
+
+        <p><strong>5. Our domain is well-scoped.</strong> Unlike "solve AGI" or "optimize the entire business," PM work has clear boundaries. We're optimizing processes, not reinventing them. The scope of each autoresearch loop is manageable.</p>
+
+        <p>The tooling doesn't exist yet (though I'm building it—more on that later). But the <em>mental model</em> is already there. If you're a PM reading this, you already understand autoresearch. You just haven't automated it yet.</p>
+
+        <h2 id="three-files">The Three-File Pattern for PM Work</h2>
+
+        <p>Karpathy's autoresearch pattern uses three files:</p>
+
+        <ul>
+            <li><code>prepare.py</code> — the fixed infrastructure (dataset, environment, dependencies)</li>
+            <li><code>train.py</code> — the thing being iterated on (model architecture, hyperparameters)</li>
+            <li><code>program.md</code> — the strategy doc (goal, metric, constraints, what can change)</li>
+        </ul>
+
+        <p>For PM work, this maps beautifully:</p>
+
+        <h3>prepare.py = Fixed Infrastructure</h3>
+
+        <p>Your fixed infrastructure is everything that <em>shouldn't</em> change during iteration:</p>
+
+        <ul>
+            <li>Your JIRA/Linear/tooling setup</li>
+            <li>Slack channels and notification patterns</li>
+            <li>Reporting cadence (weekly, bi-weekly, monthly)</li>
+            <li>Team structure and roles</li>
+            <li>Governance requirements and compliance needs</li>
+        </ul>
+
+        <p>This is your stable platform. The agent doesn't touch this.</p>
+
+        <h3>train.py = The Thing Being Iterated On</h3>
+
+        <p>This is the process, template, or approach you're optimizing:</p>
+
+        <ul>
+            <li>The status report template</li>
+            <li>The meeting agenda format</li>
+            <li>The risk scoring heuristic</li>
+            <li>The sprint planning approach</li>
+            <li>The stakeholder communication style</li>
+        </ul>
+
+        <p>The agent proposes changes here, measures outcomes, keeps what works.</p>
+
+        <h3>program.md = Your Strategy Doc</h3>
+
+        <p>This is where you define:</p>
+
+        <ul>
+            <li><strong>Goal:</strong> What you're trying to achieve</li>
+            <li><strong>Metric:</strong> How you measure success (quantitatively)</li>
+            <li><strong>What can change:</strong> The parameters the agent is allowed to modify</li>
+            <li><strong>Constraints:</strong> The guardrails (governance, tone, scope)</li>
+            <li><strong>Evaluation:</strong> How to decide if a change is an improvement</li>
+        </ul>
+
+        <p>This is your control surface. You're <em>programming</em> the optimization loop.</p>
+
+        <p>In practice, for each PM process you want to optimize, you create these three files. The agent reads <code>program.md</code>, modifies <code>train.py</code>, runs the process using <code>prepare.py</code>, measures the outcome, and decides whether to keep or revert the change.</p>
+
+        <p>It's systematic. It's measurable. It's <em>autonomous</em>.</p>
+
+        <h2 id="limitations">Honest Limitations & Risks</h2>
+
+        <p>I'd be doing you a disservice if I didn't talk about what <em>doesn't</em> work here. Autoresearch isn't a silver bullet. Here's what keeps me up at night:</p>
+
+        <h3>1. Not Everything Is Measurable</h3>
+
+        <p>Team morale. Trust. Psychological safety. Culture. These matter enormously, and they're not easily quantified. You can't just optimize for velocity if it burns out your team. You can't just optimize for email open rates if it damages relationships.</p>
+
+        <p><strong>Human judgment still matters.</strong> Autoresearch optimizes the measurable. But some of the most important parts of program management are qualitative.</p>
+
+        <h3>2. The Metric Trap (Goodhart's Law)</h3>
+
+        <p>Goodhart's Law: "When a measure becomes a target, it ceases to be a good measure."</p>
+
+        <p>If you optimize email subject lines for open rates, you might end up with clickbait. If you optimize meeting duration without tracking decision quality, you might end up with fast meetings that don't actually resolve anything.</p>
+
+        <p><strong>Your metric must capture what you actually care about.</strong> Not just what's easy to measure.</p>
+
+        <h3>3. Optimization Without Wisdom Is Dangerous</h3>
+
+        <p>An agent can optimize stakeholder communication for engagement. But it can't understand that this particular stakeholder is going through a tough quarter and needs a different tone. It can't read the room.</p>
+
+        <p><strong>Autoresearch handles iteration. Humans handle context and strategy.</strong></p>
+
+        <h3>4. Privacy and Ethics</h3>
+
+        <p>If you're iterating on real communication with real stakeholders, that has ethical dimensions. Are you telling people they're part of an A/B test? Are you getting consent? Are you handling their data responsibly?</p>
+
+        <p><strong>Transparency matters.</strong> This isn't a dark pattern. If you're experimenting on communication, be honest about it.</p>
+
+        <h3>5. Sample Size and Statistical Significance</h3>
+
+        <p>Some PM processes have small sample sizes. If you only send exec updates to 5 people, your A/B tests aren't going to be statistically significant. You need volume to measure effectively.</p>
+
+        <p><strong>Not every process is a good fit for autoresearch.</strong> Focus on high-volume, repeatable processes first.</p>
+
+        <h3>6. Human Judgment for Strategic Pivots</h3>
+
+        <p>Autoresearch optimizes within a defined space. But sometimes you need to <em>change the space entirely</em>. Sometimes the right move isn't to optimize sprint structure—it's to change your delivery model completely.</p>
+
+        <p><strong>The agent optimizes tactics. You still own strategy.</strong></p>
+
+        <div class="pullquote">
+            "Autoresearch optimizes the measurable. But some of the most important parts of program management are qualitative."
+        </div>
+
+        <h2 id="vision">The Vision: PM as Loop Architect</h2>
+
+        <p>Here's where this goes in five years:</p>
+
+        <p><strong>The best program managers won't be the ones who run the best meetings.</strong> They'll be the ones who design the best optimization loops.</p>
+
+        <p>Your competitive advantage shifts from execution to architecture. From "I know the right way to do this" to "I know what's worth optimizing and how to measure it."</p>
+
+        <p>Imagine a PM role where:</p>
+
+        <ul>
+            <li>Your status reports auto-optimize for stakeholder engagement</li>
+            <li>Your meeting structures evolve based on effectiveness data</li>
+            <li>Your risk register learns which patterns actually predict issues</li>
+            <li>Your sprint planning adapts based on team velocity trends</li>
+            <li>Your vendor evaluations improve with each procurement cycle</li>
+        </ul>
+
+        <p>You don't <em>run</em> these processes anymore. You <em>architect</em> them. You define the metrics, set the constraints, and let the agent iterate toward optimal.</p>
+
+        <p>You spend your time on:</p>
+
+        <ul>
+            <li><strong>Strategy:</strong> What should we build? What's the roadmap?</li>
+            <li><strong>Relationships:</strong> Stakeholder management, team dynamics, cross-functional alignment</li>
+            <li><strong>Judgment:</strong> The calls that require context, wisdom, and human understanding</li>
+            <li><strong>Loop design:</strong> What should we optimize next? What new metrics matter?</li>
+        </ul>
+
+        <p>The tactical execution—the part that's measurable and iterative—runs autonomously in the background.</p>
+
+        <p><strong>"What should I optimize?" becomes more important than "How do I do this?"</strong></p>
+
+        <p>This is already happening in pockets. I'm building a multi-agent AI fleet (four agents across three machines) that handles content creation, code building, and operations. One agent runs research pipelines overnight. Another manages infrastructure. They work while I sleep.</p>
+
+        <p>The same pattern applies to program management. Not because it's trendy. Because it's <em>measurable</em>, and measurement enables autonomous iteration.</p>
+
+        <h2>Where to Start (Monday Morning Action Plan)</h2>
+
+        <p>If you're reading this and thinking "I need to try this," here's what I'd do:</p>
+
+        <p><strong>1. Pick one high-volume, measurable process.</strong> Don't start with your most critical process. Start with something repeatable where you can measure outcomes. Stakeholder emails are a good choice—high volume, clear engagement metrics, low risk.</p>
+
+        <p><strong>2. Define your metric.</strong> Not "make it better." A <em>number</em>. Open rate, response rate, time-to-response, action completion rate—something you can track week over week.</p>
+
+        <p><strong>3. Write your program.md.</strong> Even if you don't have autoresearch tooling yet, writing it clarifies your thinking. What's the goal? What's the metric? What are you allowed to change? What are the constraints?</p>
+
+        <p><strong>4. Run manual experiments.</strong> You don't need AI to start iterating. Try two variations. Measure outcomes. Keep what works. You're building the muscle memory for metric-driven iteration.</p>
+
+        <p><strong>5. Instrument your processes.</strong> Start tracking the data you'll need. Email analytics, meeting durations, action item completion, velocity trends. You can't optimize what you don't measure.</p>
+
+        <p><strong>6. Think in loops.</strong> Every time you run a process, ask: "How would I measure if this worked? What would I change next time?" You're training yourself to think like a loop architect.</p>
+
+        <p>The tooling will come. I'm building it. Others are too. But the <em>mindset</em> shift can happen now.</p>
+
+        <p>Start thinking of your PM work as a set of optimization loops. Define the metrics. Instrument the processes. Iterate based on evidence, not intuition.</p>
+
+        <p>That's autoresearch. And it changes everything.</p>
+
+        <div class="author-bio">
+            <h3>About the Author</h3>
+            <p><strong>Rajan Rengasamy</strong> is a Senior Enterprise Data Programme Manager at a global proprietary trading firm, managing cross-timezone teams across Sydney, Amsterdam, and the US. He holds a background in wireless sensor networks and data analytics, with published research in MAC protocol design.</p>
+            <p>Outside of corporate work, Rajan builds AI agent systems as a passion project—a multi-agent fleet (Jarvis, Vision, Friday, Mercury) running across three machines that handles content creation, code building, and autonomous operations. He's learning to treat AI agents as an engineering team, not tools.</p>
+            <p>He lives in Sydney with his wife and two daughters (Emmy, 4, and Amber, 2). He meditates daily, practices Sanatana Dharma, and believes the future of program management is autonomous optimization loops designed by humans who understand both strategy and measurement.</p>
+            <p>Connect: <a href="https://www.linkedin.com/in/rajanrengasamy/">LinkedIn</a> | <a href="https://github.com/rajanai">GitHub</a></p>
+        </div>
+    </div>
+</body>
+</html>
